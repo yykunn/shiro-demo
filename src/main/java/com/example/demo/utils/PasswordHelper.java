@@ -5,10 +5,10 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 
 public class PasswordHelper {
-	private String algorithmName = "md5";
-    private int hashIterations = 2;
+	private static String algorithmName = "md5";
+    private static int hashIterations = 2;
  
-    public void encryptPassword(SysUser user) {
+    public static void encryptPassword(SysUser user) {
     	String newPassword = new SimpleHash(algorithmName, user.getPassword(), ByteSource.Util.bytes(user.getSalt()), hashIterations).toString();
         user.setPassword(newPassword);
  

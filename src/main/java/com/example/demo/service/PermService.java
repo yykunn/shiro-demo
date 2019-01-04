@@ -14,10 +14,26 @@ import com.example.demo.pojo.SysPermExample;
 public class PermService {
 	@Autowired
 	SysPermMapper permMapper;
+	
+	public List<SysPerm> listAll(){
+		return permMapper.selectByExample(new SysPermExample());
+	}
 
 	public List<SysPerm> listPerms(PermGrade grade) {
 		SysPermExample example = new SysPermExample();
 		example.createCriteria().andGradeEqualTo(grade.getGrade());
 		return permMapper.selectByExample(example);
+	}
+	
+	public void insert(SysPerm perm) {
+		permMapper.insert(perm);
+	}
+	
+	public void delete(SysPerm perm) {
+		permMapper.deleteByPrimaryKey(perm.getId());
+	}
+	
+	public void update(SysPerm perm) {
+		permMapper.updateByPrimaryKeySelective(perm);
 	}
 }

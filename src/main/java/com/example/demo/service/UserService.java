@@ -6,19 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.mapper.SysPermMapper;
 import com.example.demo.mapper.SysRoleMapper;
-import com.example.demo.mapper.SysRolePermMapper;
 import com.example.demo.mapper.SysUserMapper;
 import com.example.demo.mapper.SysUserRoleMapper;
-import com.example.demo.pojo.SysPerm;
 import com.example.demo.pojo.SysRole;
-import com.example.demo.pojo.SysRolePerm;
-import com.example.demo.pojo.SysRolePermExample;
 import com.example.demo.pojo.SysUser;
 import com.example.demo.pojo.SysUserExample;
 import com.example.demo.pojo.SysUserRole;
 import com.example.demo.pojo.SysUserRoleExample;
+import com.example.demo.utils.PasswordHelper;
 
 @Service
 public class UserService {
@@ -29,26 +25,40 @@ public class UserService {
 	SysRoleMapper roleMapper;
 
 	@Autowired
-	SysPermMapper permMapper;
-
-	@Autowired
 	SysUserRoleMapper userRoleMapper;
+	
+	public List<SysUser> listAll(){
+		return userMapper.selectByExample(new SysUserExample());
+	}
 
-	@Autowired
-	SysRolePermMapper rolePermMapper;
-
-	public SysUser findUserById(int id) {
+	public SysUser getUserById(int id) {
 		return userMapper.selectByPrimaryKey(id);
 	}
 
-	public SysUser findUserByAccount(String account) {
+	public SysUser getUserByAccount(String account) {
 		SysUserExample example = new SysUserExample();
 		example.createCriteria().andAccountEqualTo(account);
 		List<SysUser> users = userMapper.selectByExample(example);
-		if(users!=null&&users.size()>0) {
+		if (users != null && users.size() > 0) {
 			return users.get(0);
 		}
 		return null;
+	}
+
+	public void insert(SysUser user) {
+		user.setId(null);
+		PasswordHelper.encryptPassword(user);
+		userMapper.insert(user);
+	}
+
+	public void update(SysUser user) {
+		userMapper.updateByPrimaryKeySelective(user);
+	}
+
+	public void delete(String account) {
+		SysUserExample example = new SysUserExample();
+		example.createCriteria().andAccountEqualTo(account);
+		userMapper.deleteByExample(example);
 	}
 
 	/**
@@ -67,14 +77,4 @@ public class UserService {
 		return roles;
 	}
 
-	public List<SysPerm> getRolePerm(int roleId) {
-		List<SysPerm> perms = new ArrayList<>();
-		SysRolePermExample exam = new SysRolePermExample();
-		exam.createCriteria().andRoleIdEqualTo(roleId);
-		List<SysRolePerm> rolePerms = rolePermMapper.selectByExample(exam);
-		for (SysRolePerm rolePerm : rolePerms) {
-			perms.add(permMapper.selectByPrimaryKey(rolePerm.getPermId()));
-		}
-		return perms;
-	}
 }

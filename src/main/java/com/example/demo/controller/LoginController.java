@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.po.HttpResult;
 import com.example.demo.service.UserService;
 import com.example.demo.vo.LoginVo;
 
@@ -22,7 +23,7 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api("login")
-public class Login {
+public class LoginController {
 
 	@Autowired
 	UserService userService;
@@ -30,7 +31,7 @@ public class Login {
 	@ApiOperation(value = "test path", notes = "")
 	@RequestMapping(value = "/test/{account}", method = { RequestMethod.GET })
 	public Object login(@ApiParam(value = "", required = true) @PathVariable("account") int account) {
-		return userService.findUserById(account);
+		return userService.getUserById(account);
 	}
 
 	@ApiOperation(value = "login", notes = "")
@@ -55,20 +56,20 @@ public class Login {
 
 	// 错误页面展示
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index() {
+	public Object index() {
 		Subject subject = SecurityUtils.getSubject();
 		if (!subject.isAuthenticated() /** 登录认证是否成功(敏感信息) **/
 		/* && !subject.isRemembered() */ /** 部分认证信息是否成功(非敏感信息) **/
 		) {
-			return "您未登陆";
+			return HttpResult.fail("您未登录");
 		}
-		return "ok";
+		return HttpResult.success("登录成功");
 	}
 
 	// 错误页面展示
 	@RequestMapping(value = "/refuse", method = RequestMethod.GET)
-	public String refuse() {
-		return "您无权访问该链接";
+	public Object refuse() {
+		return HttpResult.fail("您无权访问该链接");
 	}
 
 	// 游客展示
@@ -82,8 +83,5 @@ public class Login {
 		Subject subject = SecurityUtils.getSubject();
 		return subject.getPrincipal();
 	}
-	@RequestMapping(value = "/user/list", method = RequestMethod.GET)
-	public Object userList() {
-		return "uselist";
-	}
+
 }

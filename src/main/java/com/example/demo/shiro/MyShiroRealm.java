@@ -1,6 +1,5 @@
 package com.example.demo.shiro;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.po.ActiveUser;
 import com.example.demo.pojo.SysPerm;
-import com.example.demo.pojo.SysRole;
 import com.example.demo.pojo.SysUser;
+import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
 
 //实现AuthorizingRealm接口用户用户认证
@@ -29,6 +28,8 @@ public class MyShiroRealm extends AuthorizingRealm {
 	// 用于用户查询
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RoleService roleService;
 
 	// 角色权限和对应权限添加
 	@Override
@@ -41,9 +42,11 @@ public class MyShiroRealm extends AuthorizingRealm {
 			return simpleAuthorizationInfo;
 		}
 		// 添加角色
-		simpleAuthorizationInfo.addRoles(activeUser.getRoles().stream().map(role-> role.getRoleName()).collect(Collectors.toList()));
+		simpleAuthorizationInfo
+				.addRoles(activeUser.getRoles().stream().map(role -> role.getRoleName()).collect(Collectors.toList()));
 		// 添加权限
-		simpleAuthorizationInfo.addStringPermissions(activeUser.getPerms().stream().map(perm->perm.getUri()).collect(Collectors.toList()));
+		simpleAuthorizationInfo.addStringPermissions(
+				activeUser.getPerms().stream().map(perm -> perm.getUri()).filter(uri->uri != null&&!"".equals(uri.trim())).collect(Collectors.toList()));
 
 		return simpleAuthorizationInfo;
 	}
@@ -58,7 +61,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 		}
 		// 获取用户信息
 		String name = (String) authenticationToken.getPrincipal();
-		SysUser user = userService.findUserByAccount(name);
+		SysUser user = userService.getUserByAccount(name);
 		if (user == null) {
 			// 这里返回后会报出对应异常
 			return null;
@@ -67,12 +70,12 @@ public class MyShiroRealm extends AuthorizingRealm {
 		ActiveUser activeUser = new ActiveUser(user);
 		activeUser.setRoles(userService.findUserRoles(user.getId()));
 		Set<SysPerm> perms = new HashSet<>();
-		activeUser.getRoles().forEach(role->{
-			perms.addAll(userService.getRolePerm(role.getId()));
+		activeUser.getRoles().forEach(role -> {
+			perms.addAll(roleService.getRolePerms(role.getId()));
 		});
 		activeUser.setPerms(perms);
-		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(activeUser,
-				user.getPassword(),ByteSource.Util.bytes(user.getSalt()), getName());
+		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(activeUser, user.getPassword(),
+				ByteSource.Util.bytes(user.getSalt()), getName());
 		return simpleAuthenticationInfo;
 
 	}

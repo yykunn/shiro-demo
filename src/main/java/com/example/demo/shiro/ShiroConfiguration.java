@@ -24,7 +24,7 @@ import com.example.demo.service.PermService;
 public class ShiroConfiguration {
 	@Autowired
 	PermService permService;
-	
+
 	// 将自己的验证方式加入容器
 	@Bean
 	public MyShiroRealm myShiroRealm() {
@@ -32,7 +32,7 @@ public class ShiroConfiguration {
 		myShiroRealm.setCredentialsMatcher(credentialsMatcher());
 		return myShiroRealm;
 	}
-	
+
 	// 密码匹配器
 	@Bean
 	public CredentialsMatcher credentialsMatcher() {
@@ -57,38 +57,36 @@ public class ShiroConfiguration {
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		// 登出
-		//放行静态资源
+		// 放行静态资源
 		map.put("/static/**", "anon");
 		// 登录
-		map.put("/login","anon");
-        //放行swagger
-		map.put("/swagger-ui.html","anon");
-		map.put("/swagger/**","anon");
+		map.put("/login", "anon");
+		// 放行swagger
+		map.put("/swagger-ui.html", "anon");
+		map.put("/swagger/**", "anon");
 		map.put("/webjars/**", "anon");
-		map.put("/swagger-resources/**","anon");
-		map.put("/v2/**","anon");
-		//map.put("/druid/**","anon");
-		
+		map.put("/swagger-resources/**", "anon");
+		map.put("/v2/**", "anon");
+		// map.put("/druid/**","anon");
+
 		// 对permGrade为0的链接放行
 		List<SysPerm> openPerms = permService.listPerms(PermGrade.OPEN);
-		openPerms.forEach(perm->{
+		openPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim())).forEach(perm -> {
 			map.put(perm.getUri(), "anon");
 		});
-		
+
 		shiroFilterFactoryBean.setLoginUrl("/index");
 		// 对permGrade=1 的进行拦截
 		List<SysPerm> customPerms = permService.listPerms(PermGrade.LOGIN);
-		customPerms.forEach(perm->{
-			map.put(perm.getUri(), "user");
-		});
-		
+		customPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim()))
+				.forEach(perm -> map.put(perm.getUri(), "user"));
+
 		// 对permGrade=2 的进行拦截
 		List<SysPerm> authPerms = permService.listPerms(PermGrade.AUTH);
-		authPerms.forEach(perm->{
-			map.put(perm.getUri(), "perms["+perm.getUri()+"]");
+		authPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim())).forEach(perm -> {
+			map.put(perm.getUri(), "perms[" + perm.getUri() + "]");
 		});
 
-		
 		// 对所有用户认证
 		map.put("/**", "authc");
 		// 首页
@@ -106,13 +104,13 @@ public class ShiroConfiguration {
 		authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
 		return authorizationAttributeSourceAdvisor;
 	}
-	
+
 	// 开启aop 否则注解无效
 	@Bean
-    @ConditionalOnMissingBean
-    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator defaultAAP = new DefaultAdvisorAutoProxyCreator();
-        defaultAAP.setProxyTargetClass(true);
-        return defaultAAP;
-    }
+	@ConditionalOnMissingBean
+	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+		DefaultAdvisorAutoProxyCreator defaultAAP = new DefaultAdvisorAutoProxyCreator();
+		defaultAAP.setProxyTargetClass(true);
+		return defaultAAP;
+	}
 }
