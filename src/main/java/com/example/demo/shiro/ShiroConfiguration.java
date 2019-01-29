@@ -16,7 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.demo.po.PermGrade;
+import com.example.demo.enums.PermGrade;
 import com.example.demo.pojo.SysPerm;
 import com.example.demo.service.PermService;
 
@@ -76,19 +76,19 @@ public class ShiroConfiguration {
 		});
 
 		shiroFilterFactoryBean.setLoginUrl("/index");
-		// 对permGrade=1 的进行拦截
-		List<SysPerm> customPerms = permService.listPerms(PermGrade.LOGIN);
-		customPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim()))
-				.forEach(perm -> map.put(perm.getUri(), "user"));
-
-		// 对permGrade=2 的进行拦截
-		List<SysPerm> authPerms = permService.listPerms(PermGrade.AUTH);
-		authPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim())).forEach(perm -> {
-			map.put(perm.getUri(), "perms[" + perm.getUri() + "]");
-		});
-
-		// 对所有用户认证
-		map.put("/**", "authc");
+//		// 对permGrade=1 的进行拦截
+//		List<SysPerm> customPerms = permService.listPerms(PermGrade.LOGIN);
+//		customPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim()))
+//				.forEach(perm -> map.put(perm.getUri(), "user"));
+//
+//		// 对permGrade=2 的进行拦截
+//		List<SysPerm> authPerms = permService.listPerms(PermGrade.AUTH);
+//		authPerms.stream().filter(perm -> perm.getUri() != null && !"".equals(perm.getUri().trim())).forEach(perm -> {
+//			map.put(perm.getUri(), "perms[" + perm.getUri() + "]");
+//		});
+//
+//		// 对所有用户认证
+//		map.put("/**", "authc");
 		// 首页
 		shiroFilterFactoryBean.setSuccessUrl("/success");
 		// 错误页面，认证不通过跳转

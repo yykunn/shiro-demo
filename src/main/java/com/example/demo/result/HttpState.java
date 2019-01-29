@@ -1,4 +1,4 @@
-package com.example.demo.po;
+package com.example.demo.result;
 public enum HttpState {
     /**
      * 登录错误次数 默认5次

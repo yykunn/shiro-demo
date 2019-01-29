@@ -1,8 +1,8 @@
-package com.example.demo.po;
+package com.example.demo.param;
 
 import com.example.demo.pojo.SysUser;
 
-public class UserRecord {
+public class UserInsertParam {
 	private String account;
 
 	private String password;

@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import javax.validation.Valid;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.po.HttpResult;
+import com.example.demo.result.HttpResult;
 import com.example.demo.service.UserService;
 import com.example.demo.vo.LoginVo;
 
@@ -42,7 +42,11 @@ public class LoginController {
 		UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginVo.getAccount(),
 				loginVo.getPassword());
 		// 进行验证，这里可以捕获异常，然后返回对应信息
-		subject.login(usernamePasswordToken);
+		try{
+			subject.login(usernamePasswordToken);
+		}catch (IncorrectCredentialsException e){
+			return HttpResult.fail("用户名或密码错误");
+		}
 		return "login success:" + loginVo.getAccount() + " " + loginVo.getPassword();
 	}
 
@@ -55,7 +59,7 @@ public class LoginController {
 	}
 
 	// 错误页面展示
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index")
 	public Object index() {
 		Subject subject = SecurityUtils.getSubject();
 		if (!subject.isAuthenticated() /** 登录认证是否成功(敏感信息) **/
@@ -67,7 +71,7 @@ public class LoginController {
 	}
 
 	// 错误页面展示
-	@RequestMapping(value = "/refuse", method = RequestMethod.GET)
+	@RequestMapping(value = "/refuse")
 	public Object refuse() {
 		return HttpResult.fail("您无权访问该链接");
 	}

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.SysPermMapper;
-import com.example.demo.po.PermGrade;
+import com.example.demo.enums.PermGrade;
 import com.example.demo.pojo.SysPerm;
 import com.example.demo.pojo.SysPermExample;
 
@@ -29,8 +29,8 @@ public class PermService {
 		permMapper.insert(perm);
 	}
 	
-	public void delete(SysPerm perm) {
-		permMapper.deleteByPrimaryKey(perm.getId());
+	public void delete(Integer permId) {
+		permMapper.deleteByPrimaryKey(permId);
 	}
 	
 	public void update(SysPerm perm) {

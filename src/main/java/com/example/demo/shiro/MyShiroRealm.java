@@ -16,7 +16,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.demo.po.ActiveUser;
+import com.example.demo.result.ActiveUser;
 import com.example.demo.pojo.SysPerm;
 import com.example.demo.pojo.SysUser;
 import com.example.demo.service.RoleService;
@@ -71,7 +71,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 		activeUser.setRoles(userService.findUserRoles(user.getId()));
 		Set<SysPerm> perms = new HashSet<>();
 		activeUser.getRoles().forEach(role -> {
-			perms.addAll(roleService.getRolePerms(role.getId()));
+			perms.addAll(roleService.findRolePerms(role.getId()));
 		});
 		activeUser.setPerms(perms);
 		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(activeUser, user.getPassword(),

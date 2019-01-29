@@ -1,4 +1,4 @@
-package com.example.demo.po;
+package com.example.demo.result;
 public class Result<T> {
 
     /** 状态码 */

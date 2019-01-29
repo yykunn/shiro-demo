@@ -1,4 +1,4 @@
-package com.example.demo.po;
+package com.example.demo.enums;
 /**
  * 权限等级 
  * @author admin

@@ -6,6 +6,16 @@ import java.util.List;
 public class SysUserExample {
     protected String orderByClause;
 
+    protected String limitClause;
+
+    public String getLimitClause() {
+        return limitClause;
+    }
+
+    public void setLimitClause(String limitClause) {
+        this.limitClause = limitClause;
+    }
+
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;

@@ -6,6 +6,8 @@ import java.util.List;
 public class SysRoleExample {
     protected String orderByClause;
 
+    protected String limitClause;
+
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
@@ -42,6 +44,14 @@ public class SysRoleExample {
         Criteria criteria = createCriteriaInternal();
         oredCriteria.add(criteria);
         return criteria;
+    }
+
+    public String getLimitClause() {
+        return limitClause;
+    }
+
+    public void setLimitClause(String limitClause) {
+        this.limitClause = limitClause;
     }
 
     public Criteria createCriteria() {

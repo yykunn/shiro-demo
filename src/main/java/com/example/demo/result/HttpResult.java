@@ -1,4 +1,4 @@
-package com.example.demo.po;
+package com.example.demo.result;
 public class HttpResult {
     public synchronized static Result success( Object data ){
         Result result = new Result();
